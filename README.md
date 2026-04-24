@@ -10,6 +10,7 @@ Aplikacja stworzona w ramach zadania rekrutacyjnego.
 - [Architektura](#-architektura)
 - [Wymagania](#-wymagania)
 - [Uruchomienie](#-uruchomienie)
+- [Dokumentacja API](#-dokumentacja-api-swagger-ui)
 - [Domyślne konta](#-domyślne-konta)
 - [Endpointy API](#-endpointy-api)
 - [Przykłady użycia](#-przykłady-użycia)
@@ -20,12 +21,13 @@ Aplikacja stworzona w ramach zadania rekrutacyjnego.
 
 - **Java 21** (Amazon Corretto)
 - **Spring Boot 3.5** — Web, Data JPA, Security, Validation
-- **PostgreSQL 16** (uruchamiana w kontenerze Docker)
+- **PostgreSQL 16** — baza danych (uruchamiana w kontenerze Docker)
 - **JWT** (jjwt 0.12) — stateless authentication
 - **MapStruct 1.6** — mapowanie DTO ↔ Entity
 - **Lombok** — redukcja boilerplate
 - **Maven** — zarządzanie zależnościami
-- **Docker + Docker Compose** — konteneryzacja bazy danych
+- **Docker + Docker Compose** — konteneryzacja aplikacji i bazy danych
+- **Swagger / OpenAPI 3** — dokumentacja i testowanie API
 
 ## ✨ Funkcjonalności
 
@@ -36,14 +38,16 @@ Aplikacja stworzona w ramach zadania rekrutacyjnego.
 - ✅ Aktualizacja produktu
 - ✅ Usuwanie produktu
 - ✅ Wyszukiwanie produktów po kategorii
-- ✅ Zabezpieczenie API (JWT + role)
+- ✅ Zabezpieczenie API (JWT + role USER/ADMIN)
 - ✅ Obsługa błędów (`@ControllerAdvice` + ustandaryzowane odpowiedzi)
 - ✅ Walidacja danych wejściowych (Bean Validation)
 
 ### Dodatkowe (ponad wymagania)
+- ✅ Swagger UI — interaktywna dokumentacja API
+- ✅ Testy jednostkowe, integracyjne i security
 - ✅ Audytowanie encji (`createdAt`, `createdBy`, `updatedAt`, `modifiedBy`)
 - ✅ Automatyczna inicjalizacja danych przy starcie (seed userów i produktów)
-- ✅ Konteneryzacja bazy danych przez Docker Compose
+- ✅ Pełna konteneryzacja aplikacji i bazy danych przez Docker Compose
 - ✅ Paginacja listy produktów
 - ✅ Strukturyzowane logowanie błędów
 
@@ -63,11 +67,64 @@ com.productapi/
 │   └── dto/
 └── user/              # Encja użytkownika i repozytorium
 ```
+
 ## ⚙️ Wymagania
 
-- **JDK 21** (testowane na Amazon Corretto 21.0.4)
-- **Maven 3.9+**
-- **Docker Desktop** (do uruchomienia bazy danych)
+- **Docker Desktop** — jedyne wymaganie do uruchomienia przez Docker
+- **JDK 21** + **Maven 3.9+** — tylko do uruchomienia lokalnego bez Dockera
+
+## 🚀 Uruchomienie
+
+### Opcja A — Docker (zalecane, jedna komenda)
+
+```bash
+git clone https://github.com/dominik24356/product-management-api.git
+cd product-management-api
+cp .env.example .env
+docker compose up --build
+```
+
+Aplikacja i baza danych uruchomią się automatycznie.
+Dostępna pod: **http://localhost:8080**
+
+### Opcja B — lokalnie (bez Dockera)
+
+#### 1. Sklonuj repozytorium
+
+```bash
+git clone https://github.com/dominik24356/product-management-api.git
+cd product-management-api
+```
+
+#### 2. Skopiuj plik konfiguracji środowiska
+
+```bash
+cp .env.example .env
+```
+
+#### 3. Uruchom bazę danych
+
+```bash
+docker compose up db -d
+```
+
+#### 4. Uruchom aplikację
+
+```bash
+mvn spring-boot:run
+```
+
+Lub z poziomu IntelliJ IDEA — Run `ProductManagementApiApplication`.
+
+#### 5. Sprawdź że działa
+
+Przy pierwszym starcie w logach powinny pojawić się komunikaty:
+
+```
+Created default ADMIN user: 'admin'
+Created default USER user: 'user'
+Seeded 3 default products
+```
 
 ## 📖 Dokumentacja API (Swagger UI)
 
@@ -90,57 +147,6 @@ Po uruchomieniu aplikacji dokumentacja jest dostępna pod adresem:
 5. Kliknij przycisk `Authorize` 🔒 w prawym górnym rogu
 6. Wklej token (bez słowa `Bearer`) i kliknij `Authorize`
 7. Teraz możesz testować wszystkie chronione endpointy bezpośrednio z przeglądarki
-
-## 🚀 Uruchomienie
-
-### 1. Sklonuj repozytorium
-
-```bash
-git clone <repo-url>
-cd product-management-api
-```
-
-### 2. Skopiuj plik konfiguracji środowiska
-
-```bash
-cp .env.example .env
-```
-
-Domyślne wartości w `.env` są gotowe do użycia lokalnego. Możesz je dostosować jeśli potrzeba.
-
-### 3. Uruchom bazę danych w Dockerze
-
-```bash
-docker-compose up -d
-```
-
-Polecenie uruchomi kontener PostgreSQL 16 w tle. Sprawdź status:
-
-```bash
-docker ps
-```
-
-Powinieneś zobaczyć kontener `productapi-db` ze statusem `(healthy)`.
-
-### 4. Uruchom aplikację
-
-```bash
-mvn spring-boot:run
-```
-
-Lub z poziomu IntelliJ IDEA — Run `ProductManagementApiApplication`.
-
-Aplikacja będzie dostępna pod adresem: **http://localhost:8080**
-
-### 5. Sprawdź że działa
-
-Przy pierwszym starcie w logach powinny pojawić się komunikaty:
-
-```
-Created default ADMIN user: 'admin'
-Created default USER user: 'user'
-Seeded 3 default products
-```
 
 ## 🔐 Domyślne konta
 
@@ -244,11 +250,7 @@ curl -X POST http://localhost:8080/products \
   "name": "Laptop Dell XPS 15",
   "description": "Laptop biznesowy z ekranem 4K",
   "price": 4500.00,
-  "category": "Elektronika",
-  "createdAt": "2026-04-24T12:00:00",
-  "createdBy": "admin",
-  "updatedAt": "2026-04-24T12:00:00",
-  "modifiedBy": "admin"
+  "category": "Elektronika"
 }
 ```
 
@@ -292,36 +294,35 @@ API zwraca ustandaryzowane odpowiedzi błędów:
 
 ```json
 {
-  "timestamp": "2026-04-24T12:00:00",
+  "timestamp": "2026-04-24T12:00:00Z",
   "status": 404,
-  "message": "Product not found with id: 99"
+  "error": "Not Found",
+  "message": "Product not found with id: 99",
+  "path": "/products/99"
 }
 ```
+
 ## 🛑 Zatrzymanie aplikacji
 
-### Zatrzymanie aplikacji Java
-Ctrl+C w terminalu z `mvn spring-boot:run`, lub Stop w IntelliJ.
-
-### Zatrzymanie bazy danych
+### Zatrzymanie (dane zostają)
 
 ```bash
-docker-compose down
+docker compose down
 ```
 
-Dane zostają w wolumenie — po kolejnym `docker-compose up -d` baza wraca w tym samym stanie.
-
-### Wyczyszczenie danych bazy
+### Zatrzymanie z usunięciem danych bazy
 
 ```bash
-docker-compose down -v
+docker compose down -v
 ```
 
-⚠️ Flaga `-v` usuwa wolumen z danymi. Przy kolejnym starcie baza będzie pusta, a DataInitializer stworzy domyślne konta i produkty od nowa.
+> ⚠️ Flaga `-v` usuwa wolumen z danymi. Przy kolejnym starcie baza będzie pusta, a DataInitializer stworzy domyślne konta i produkty od nowa.
 
 ## 📝 Uwagi końcowe
 
 - Token JWT wygasa po **24 godzinach** (konfigurowalne przez `jwt.expiration` w `application.yml`)
 - Wszystkie zmiany w tabelach są automatycznie audytowane
-- Hasła są hashowane algorytmem **BCrypt** (10 rund)
+- Hasła są hashowane algorytmem **BCrypt**
 - Baza danych pracuje w wolumenie Docker — dane są persystentne między restartami kontenera
 - Aplikacja używa `Hibernate DDL auto-update` — schemat bazy tworzy się automatycznie przy starcie
+- Frontend (Angular) — nie zrealizowany z uwagi na ograniczenia czasowe, API w pełni udokumentowane i testowalne przez Swagger UI dostępny pod `/swagger-ui.html`
