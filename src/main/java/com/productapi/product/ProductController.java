@@ -3,6 +3,7 @@ package com.productapi.product;
 import com.productapi.product.dto.CreateProductRequest;
 import com.productapi.product.dto.ProductResponse;
 import com.productapi.product.dto.UpdateProductRequest;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 public class ProductController {
 
     private final ProductService productService;

@@ -69,6 +69,28 @@ com.productapi/
 - **Maven 3.9+**
 - **Docker Desktop** (do uruchomienia bazy danych)
 
+## 📖 Dokumentacja API (Swagger UI)
+
+Po uruchomieniu aplikacji dokumentacja jest dostępna pod adresem:
+
+**http://localhost:8080/swagger-ui.html**
+
+### Jak testować przez Swagger UI:
+
+1. Otwórz http://localhost:8080/swagger-ui.html
+2. Rozwiń `auth-controller` → `POST /auth/login`
+3. Kliknij `Try it out` i wpisz credentials:
+```json
+{
+  "username": "admin",
+  "password": "admin123"
+}
+```
+4. Skopiuj wartość `token` z odpowiedzi
+5. Kliknij przycisk `Authorize` 🔒 w prawym górnym rogu
+6. Wklej token (bez słowa `Bearer`) i kliknij `Authorize`
+7. Teraz możesz testować wszystkie chronione endpointy bezpośrednio z przeglądarki
+
 ## 🚀 Uruchomienie
 
 ### 1. Sklonuj repozytorium
