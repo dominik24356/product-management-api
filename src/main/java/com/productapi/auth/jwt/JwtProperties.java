@@ -1,4 +1,4 @@
-package com.productapi.config;
+package com.productapi.auth.jwt;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

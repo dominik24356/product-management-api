@@ -1,4 +1,4 @@
-package com.productapi.config;
+package com.productapi.audit;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

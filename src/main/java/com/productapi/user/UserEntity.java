@@ -1,6 +1,6 @@
 package com.productapi.user;
 
-import com.productapi.config.AuditData;
+import com.productapi.audit.AuditData;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,7 +42,8 @@ public class UserEntity implements UserDetails {
     }
 
     @Embedded
-    private AuditData auditData;
+    @Builder.Default
+    private AuditData auditData = new AuditData();
 
     @Override
     public boolean isAccountNonExpired() { return true; }

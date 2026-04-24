@@ -1,6 +1,5 @@
 package com.productapi.auth.jwt;
 
-import com.productapi.config.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

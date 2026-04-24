@@ -1,6 +1,6 @@
 package com.productapi.product;
 
-import com.productapi.config.AuditData;
+import com.productapi.audit.AuditData;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,5 +36,6 @@ public class ProductEntity {
     private String category;
 
     @Embedded
-    private AuditData auditData;
+    @Builder.Default
+    private AuditData auditData = new AuditData();
 }
